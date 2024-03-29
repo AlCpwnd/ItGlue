@@ -18,7 +18,7 @@ The networkpath can be documented within the script under the `$ReportLocation` 
 
 ```ps
 # ======================================================================================================
-# Location the report needs to be saved. If none are given, the report will be saved at the script root.
+# Location the report needs to be saved.
     $ReportLocation = "" 
 # ======================================================================================================
 ```

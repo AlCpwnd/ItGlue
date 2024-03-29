@@ -1,9 +1,9 @@
 #Requires -RunAsAdministrator
 
-# ======================================================================================================
-# Location the report needs to be saved. If none are given, the report will be saved at the script root.
+# =================================================================================================
+# Location the report needs to be saved. 
     $ReportLocation = "" 
-# ======================================================================================================
+# =================================================================================================
 
 # Stops the script the network destination isn't reachable.
 if(!(Test-Path -Path $ReportLocation)){
