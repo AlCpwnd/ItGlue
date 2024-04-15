@@ -37,11 +37,20 @@ class NIC {
 $MainNic = Get-NetIPConfiguration | Where-Object{$_.IPv4DefaultGateway} | Select-Object -First 1
 $AdapterConfig = Get-NetAdapter
 $NicInfo = foreach($Nic in $AdapterConfig){
+    $Test = Get-NetIPAddress -InterfaceAlias $Nic.Name -ErrorAction SilentlyContinue
     $Temp = [NIC]::new()
     $Temp.name = $Nic.Name
-    $Temp.ip_address = (Get-NetIPConfiguration -InterfaceAlias $Nic.Name).IPv4Address.IPAddress
-    $Temp.notes = $Nic.LinkSpeed
-    $Temp.primary = if($Nic -eq $MainNic){
+    $Temp.ip_address = if($Test){
+        (Get-NetIPConfiguration -InterfaceAlias $Nic.Name).IPv4Address.IPAddress
+    }else{
+        ""
+    }
+    $Temp.notes = if($Test){
+        $Nic.LinkSpeed
+    }else{
+        "[disconnected]"
+    }
+    $Temp.primary = if($Nic.Name -eq $MainNic.InterfaceAlias){
         "true"
     }else{
         "false"
@@ -100,7 +109,7 @@ $ConfigInfo.manufacturer = $MFInfo.Manufacturer
 $ConfigInfo.model = $MFInfo.Model
 $ConfigInfo.operating_system = $OsInfo.Caption
 $ConfigInfo.installed_at = $OsInfo.InstallDate.ToString('yyyy-MM-dd')
-$ConfigInfo.configuration_interfaces = $NicInfo | ConvertTo-Json
+$ConfigInfo.configuration_interfaces = $NicInfo | ConvertTo-Json -Compress
 
 # Report export
 $Date = Get-Date -Format yyyy-MM-dd
