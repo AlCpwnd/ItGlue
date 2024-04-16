@@ -27,12 +27,15 @@ if(Get-ChildItem -Path $ReportLocation -Filter "$env:COMPUTERNAME*.csv"){
 }
 
 # Manufacturerinfo
+Write-Verbose "Recovering manufacturer information."
 $MFInfo = Get-WmiObject -Class Win32_ComputerSystem
 
 # OsInfo
+Write-Verbose "Recovering Operating System information."
 $OsInfo = Get-CimInstance -ClassName CIM_OperatingSystem -Property *
 
 # BiosInfo
+Write-Verbose "Recovering BIOS information."
 $BiosInfo = Get-WmiObject -Class Win32_BIOS
 
 # NICInfo
@@ -45,6 +48,7 @@ class NIC {
     [Int]$port
 }
 
+Write-Verbose "Recovering Network Interfaces information."
 $MainNic = Get-NetIPConfiguration | Where-Object{$_.IPv4DefaultGateway} | Select-Object -First 1
 $AdapterConfig = Get-NetAdapter
 $NicInfo = foreach($Nic in $AdapterConfig){
@@ -98,6 +102,7 @@ class ItGlueConfig{
     [String]$configuration_interfaces
 }
 
+Write-Verbose "Generating report."
 $ConfigInfo = [ItGlueConfig]::new()
 $ConfigInfo.name = $env:COMPUTERNAME
 $ConfigInfo.configuration_type = if($MFInfo.PCSytemType -eq 2){
@@ -123,6 +128,7 @@ $ConfigInfo.installed_at = $OsInfo.InstallDate.ToString('yyyy-MM-dd')
 $ConfigInfo.configuration_interfaces = $NicInfo | ConvertTo-Json -Compress
 
 # Report export
+Write-Verbose "Exporting report."
 $Date = Get-Date -Format yyyy-MM-dd
 $Path = "$ReportLocation\$env:COMPUTERNAME`_$Date.csv" -replace '\\','\'
 $ConfigInfo | Export-Csv -Path $Path -NoTypeInformation -NoClobber -Encoding UTF8 -Delimiter ','
