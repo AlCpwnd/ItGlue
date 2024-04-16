@@ -1,17 +1,25 @@
 #Requires -RunAsAdministrator
 
+param(
+    [Switch]$Test
+)
+
 # =================================================================================================
 # Location the report needs to be saved. 
     $ReportLocation = "" 
 # =================================================================================================
 
+if($Test){
+    $ReportLocation = $PSScriptRoot
+}
+
 # Stops the script the network destination isn't reachable.
 if(!(Test-Path -Path $ReportLocation)){
-    return
+    throw "No report path given."
 }
 
 # Stops if a report already exists for the current computer
-if(Test-Path -Path "$ReportLocation*$env:COMPUTERNAME*.csv"){
+if(Get-ChildItem -Path $ReportLocation -Filter "$env:COMPUTERNAME*.csv"){
     return
 }
 
