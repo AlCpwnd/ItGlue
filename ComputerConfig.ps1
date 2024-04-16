@@ -1,5 +1,6 @@
 #Requires -RunAsAdministrator
 
+[cmdletbinding()]
 param(
     [Switch]$Test
 )
@@ -11,6 +12,7 @@ param(
 
 if($Test){
     $ReportLocation = $PSScriptRoot
+    Write-Verbose "Test run detected. Defining script root as report location: $ReportLocation"
 }
 
 # Stops the script the network destination isn't reachable.
@@ -20,6 +22,7 @@ if(!(Test-Path -Path $ReportLocation)){
 
 # Stops if a report already exists for the current computer
 if(Get-ChildItem -Path $ReportLocation -Filter "$env:COMPUTERNAME*.csv"){
+    Write-Verbose "Report for this device is already present."
     return
 }
 
