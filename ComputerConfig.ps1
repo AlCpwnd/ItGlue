@@ -43,7 +43,7 @@ class NIC {
     [String]$name
     [String]$ip_address
     [String]$notes
-    [string]$primary
+    [bool]$primary
     [String]$mac_address
     [Int]$port
 }
@@ -66,9 +66,9 @@ $NicInfo = foreach($Nic in $AdapterConfig){
         "[disconnected]"
     }
     $Temp.primary = if($Nic.Name -eq $MainNic.InterfaceAlias){
-        "true"
+        $true
     }else{
-        "false"
+        $false
     }
     $Temp.mac_address = $Nic.MacAddress.Replace('-',':')
     $Temp.port = $Nic.InterfaceIndex
@@ -83,7 +83,7 @@ class ItGlueConfig{
     [String]$configuration_type
     [String]$configuration_status
     [String]$hostname
-    [String]$pirmary_ip
+    [String]$primary_ip
     [String]$default_gateway
     [String]$mac_address
     [String]$serial_number
@@ -117,7 +117,7 @@ if($MFInfo.Manufacturer -match 'VMware'){
 }
 $ConfigInfo.configuration_status = 'Active'
 $ConfigInfo.hostname = $env:COMPUTERNAME
-$ConfigInfo.pirmary_ip = $NicInfo[0].ip_address
+$ConfigInfo.primary_ip = $NicInfo[0].ip_address
 $ConfigInfo.default_gateway = $MainNic.IPv4DefaultGateway.NextHop
 $ConfigInfo.mac_address = ($NicInfo | Where-Object{$_.primary}).mac_address
 $ConfigInfo.serial_number = $BiosInfo.SerialNumber
